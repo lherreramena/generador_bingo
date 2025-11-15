@@ -58,7 +58,7 @@ def generar_e_imprimir_cartones(cantidad=1):
 # --- Ejecución del Programa ---
 # Cambia el número para generar la cantidad de cartones que necesitas
 if __name__ == '__main__':
-    GENERAR_CANTIDAD = 5
+    GENERAR_CANTIDAD = 1
     generar_e_imprimir_cartones(GENERAR_CANTIDAD)
 
     print(f"\n✅ ¡Generación completada! Los cartones se guardaron en 'cartones_loteria.txt'")

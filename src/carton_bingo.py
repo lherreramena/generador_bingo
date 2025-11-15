@@ -29,8 +29,8 @@ PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
 PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
 
 # Configuración del tamaño de cada cartón (ajustable)
-CARD_WIDTH_PX = mm_a_pixeles(80)  # Ancho de un cartón en píxeles (aprox 8cm)
-CARD_HEIGHT_PX = mm_a_pixeles(80) # Alto de un cartón en píxeles (aprox 8cm)
+CARD_WIDTH_PX = mm_a_pixeles(95)  # Ancho de un cartón en píxeles (aprox 8cm)
+CARD_HEIGHT_PX = mm_a_pixeles(95) # Alto de un cartón en píxeles (aprox 8cm)
 
 # Márgenes internos de la página y entre cartones
 PAGE_MARGIN_PX = mm_a_pixeles(10) # 10mm de margen en la página
@@ -95,17 +95,22 @@ def dibujar_carton(df_carton, card_id):
     draw = ImageDraw.Draw(img)
 
     # Dibujar el borde rojo exterior
-    BORDER_THICKNESS = mm_a_pixeles(3) # Grosor del borde
+    BORDER_THICKNESS = mm_a_pixeles(4) # Grosor del borde
     draw.rectangle(
         (0, 0, CARD_WIDTH_PX - 1, CARD_HEIGHT_PX - 1), 
         fill=BORDER_COLOR, 
         outline=BORDER_COLOR, 
         width=BORDER_THICKNESS
     )
-    
+    # Top rectangle
+    top_heigh = mm_a_pixeles(15)
+    draw.rectangle(
+        (0,0, CARD_WIDTH_PX -1, top_heigh),
+        fill=BORDER_COLOR
+    )
     # Dibujar el área blanca interior (donde van los números)
     inner_rect = (
-        BORDER_THICKNESS, BORDER_THICKNESS, 
+        BORDER_THICKNESS, top_heigh, 
         CARD_WIDTH_PX - BORDER_THICKNESS, CARD_HEIGHT_PX - BORDER_THICKNESS
     )
     draw.rectangle(inner_rect, fill=BACKGROUND_COLOR)
@@ -115,15 +120,13 @@ def dibujar_carton(df_carton, card_id):
     cell_height = (inner_rect[3] - inner_rect[1]) / 5
 
     # Dibujar la cuadrícula y rellenar números
-    for r in range(5):
+    for r in range(6):
         for c in range(5):
             x1 = inner_rect[0] + c * cell_width
-            y1 = inner_rect[1] + r * cell_height
+            y1 = inner_rect[1] + r * cell_height - cell_height
             x2 = x1 + cell_width
             y2 = y1 + cell_height
 
-            # Dibujar línea de la cuadrícula
-            draw.rectangle((x1, y1, x2, y2), outline=GRID_COLOR, width=1)
 
             # Escribir encabezado B I N G O
             if r == 0:
@@ -137,10 +140,13 @@ def dibujar_carton(df_carton, card_id):
                     fill=TEXT_COLOR, 
                     font=FONT_HEADER
                 )
-            
+            else:
+                # Dibujar línea de la cuadrícula
+                draw.rectangle((x1, y1, x2, y2), outline=GRID_COLOR, width=1)
+
             # Escribir números o "Libre"
             if r > 0: # Saltamos la fila de encabezados para los números
-                if df_carton.columns[c] == 'N' and r == 2: # Celda central
+                if df_carton.columns[c] == 'N' and r == 3: # Celda central
                     # Dibujar un rectángulo rojo para el espacio "Libre"
                     draw.rectangle((x1, y1, x2, y2), fill=FREE_SPACE_COLOR, outline=GRID_COLOR, width=1)
                     num_text = "Libre"
@@ -223,5 +229,5 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
 
 # --- Ejecución del programa ---
 if __name__ == '__main__':
-    CANTIDAD_DESEADA_CARTONES = 4 # Puedes cambiar esta cantidad
+    CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
     generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
