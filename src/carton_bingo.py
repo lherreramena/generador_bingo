@@ -49,9 +49,10 @@ try:
     #const fontPath = path.join(__dirname, '../assets/fonts/PottiSreeramulu.ttf');
     #FONT_PATH = "arial.ttf" # Ruta a una fuente .ttf disponible en tu sistema
     #FONT_PATH = "/usr/share/code/resources/app/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.ttf"
-    FONT_PATH = "/usr/share/fonts/truetype/teluguvijayam/PottiSreeramulu.ttf"
+    #FONT_PATH = "/usr/share/fonts/truetype/teluguvijayam/PottiSreeramulu.ttf"
+    FONT_PATH = "../assets/fonts/PottiSreeramulu.ttf"
     FONT_HEADER = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(8)) # Tamaño para B-I-N-G-O
-    FONT_NUMBERS = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(12)) # Tamaño para números
+    FONT_NUMBERS = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(10)) # Tamaño para números
     FONT_FREE = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(8)) # Tamaño para 'Libre'
 except IOError:
     print("Advertencia: No se encontró 'arial.ttf'. Usando la fuente predeterminada de Pillow.")
@@ -221,5 +222,6 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
 
 # --- Ejecución del programa ---
-CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
-generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
+if __name__ == '__main__':
+    CANTIDAD_DESEADA_CARTONES = 4 # Puedes cambiar esta cantidad
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
