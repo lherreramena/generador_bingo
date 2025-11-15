@@ -146,12 +146,31 @@ def dibujar_carton(df_carton, card_id):
 
             # Escribir números o "Libre"
             if r > 0: # Saltamos la fila de encabezados para los números
-                if df_carton.columns[c] == 'N' and r == 3: # Celda central
-                    # Dibujar un rectángulo rojo para el espacio "Libre"
-                    draw.rectangle((x1, y1, x2, y2), fill=FREE_SPACE_COLOR, outline=GRID_COLOR, width=1)
-                    num_text = "Libre"
-                    font = FONT_FREE
-                    text_color = FREE_SPACE_TEXT_COLOR
+                if df_carton.columns[c] == 'N' and r == 3:  # Celda central
+                    # Abrir el logo
+                    try:
+                        logo = Image.open("../assets/img/logo.png").convert("RGBA")
+
+                        # Ajustar tamaño del logo para que encaje en la celda
+                        logo = logo.resize((int(cell_width), int(cell_height)), Image.LANCZOS)
+
+                        # Pegar el logo en la celda
+                        img.paste(logo, (int(x1), int(y1)), logo)  # usa el canal alfa como máscara
+                    except IOError:
+                        print("No se encontró logo.png, usando celda roja por defecto")
+                        draw.rectangle((x1, y1, x2, y2), fill=FREE_SPACE_COLOR, outline=GRID_COLOR, width=1)
+                        num_text = "Libre"
+                        font = FONT_FREE
+                        text_color = FREE_SPACE_TEXT_COLOR
+                        text_bbox = draw.textbbox((0,0), num_text, font=font)
+                        text_width = text_bbox[2] - text_bbox[0]
+                        text_height = text_bbox[3] - text_bbox[1]
+                        draw.text(
+                            (x1 + (cell_width - text_width) / 2, y1 + (cell_height - text_height) / 2),
+                            num_text,
+                            fill=text_color,
+                            font=font
+                        )
                 else:
                     num_text = str(df_carton.iloc[r-1, c]) # r-1 porque la fila 0 es el encabezado
                     font = FONT_NUMBERS
