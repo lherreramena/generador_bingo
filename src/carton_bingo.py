@@ -149,13 +149,13 @@ def dibujar_carton(df_carton, card_id):
                 if df_carton.columns[c] == 'N' and r == 3:  # Celda central
                     # Abrir el logo
                     try:
-                        logo = Image.open("../assets/img/logo.png").convert("RGBA")
+                        logo = Image.open("./assets/img/logo.png").convert("RGBA")
 
                         # Ajustar tamaño del logo para que encaje en la celda
-                        logo = logo.resize((int(cell_width), int(cell_height)), Image.LANCZOS)
+                        logo = logo.resize((int(cell_width-6), int(cell_height-6)), Image.LANCZOS)
 
                         # Pegar el logo en la celda
-                        img.paste(logo, (int(x1), int(y1)), logo)  # usa el canal alfa como máscara
+                        img.paste(logo, (int(x1+3), int(y1+3)), logo)  # usa el canal alfa como máscara
                     except IOError:
                         print("No se encontró logo.png, usando celda roja por defecto")
                         draw.rectangle((x1, y1, x2, y2), fill=FREE_SPACE_COLOR, outline=GRID_COLOR, width=1)
