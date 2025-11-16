@@ -227,7 +227,7 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols, rows):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -236,6 +236,8 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
     # Calcular cuántos cartones caben por fila y columna
     num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_WIDTH_PX + CARD_SPACING_PX)
     num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_HEIGHT_PX + CARD_SPACING_PX)
+    num_cols_page = cols
+    num_rows_page = rows
     
     if num_cols_page == 0 or num_rows_page == 0:
         print("Error: Los cartones son demasiado grandes para la página o los márgenes.")
@@ -272,7 +274,9 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
 
         x_offset = PAGE_MARGIN_PX + col * (CARD_WIDTH_PX + CARD_SPACING_PX)
         y_offset = PAGE_MARGIN_PX + row * (CARD_HEIGHT_PX + CARD_SPACING_PX)
-        
+        info = { 'idx': idx, 'row': row, 'col': col}
+        logging.info(f"{info}")
+
         sheet_img.paste(card_img, (x_offset, y_offset))
         current_card_count += 1
 
@@ -307,18 +311,26 @@ def calc_columns_and_rows(cartones_per_page: int):
 
     return mejor_cols, mejor_filas
 
-def calc_carton_sizes(rows, colums):
-with = int( (PAGE_WIDTH_PX - PAGE_MARGIN_PX) / columns) 
-heigh = int((PAGE_HEIGHT_MM - PAGE_MARGIN_PX)/rows)
-carton_width = min(with, heigh)-CARD_SPACING_PX
-carton_heigh = carton_width
+def calc_carton_sizes(rows, columns):
+    width = int( (PAGE_WIDTH_PX - PAGE_MARGIN_PX) / columns) 
+    heigh = int((PAGE_HEIGHT_MM - PAGE_MARGIN_PX)/rows)
+    carton_width = min(width, heigh)- CARD_SPACING_PX
+    carton_heigh = carton_width
 
-offset_width = 
+    offset_width = int((width - carton_width)/2)
+    offset_heigh = int((heigh - carton_heigh)/2)
+
+    return carton_width, carton_heigh, offset_width, offset_heigh
     
 def calc_sizes(cartones_per_page, paper_size, total_cartones):
     set_paper_size(paper_size=paper_size)
     columns, rows = calc_columns_and_rows(cartones_per_page)
-carton_width, carton_heigh, offset_width, offset_heigh = calc_carton_sizes(rows, colums)
+    carton_width, carton_heigh, offset_width, offset_heigh = calc_carton_sizes(rows, columns)
+    CARD_WIDTH_PX = carton_width
+    CARD_HEIGHT_PX = carton_heigh
+    CARD_SPACING_PX = offset_width * 2
+    
+    return columns, rows
 
 # --- Ejecución del programa ---
 if __name__ == '__main__':
@@ -327,5 +339,5 @@ if __name__ == '__main__':
 
     CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
     paper_size = 'letter'
-    calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
+    cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES, cols, rows)
