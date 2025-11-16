@@ -281,9 +281,36 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
     print(f"\n✅ Se generó '{output_filename}' con {current_card_count} cartones.")
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
 
+def calc_columns_and_rows(cartones_per_page: int):
+    """
+    Calcula cuántas columnas y filas se deben usar en la página
+    basándose en el tamaño de la página y la cantidad de cartones deseada.
+    Devuelve (num_cols, num_rows).
+    """
+
+    # Relación de aspecto de la página
+    aspect_ratio = PAGE_WIDTH_PX / PAGE_HEIGHT_PX
+
+    # Empezamos buscando factores de cartones_per_page
+    posibles = []
+    for filas in range(1, cartones_per_page + 1):
+        if cartones_per_page % filas == 0:
+            cols = cartones_per_page // filas
+            posibles.append((cols, filas))
+
+    # Elegimos la combinación cuya proporción columnas/filas
+    # se acerque más a la proporción de la página
+    mejor_cols, mejor_filas = min(
+        posibles,
+        key=lambda x: abs((x[0] / x[1]) - aspect_ratio)
+    )
+
+    return mejor_cols, mejor_filas
+    
 def calc_sizes(cartones_per_page, paper_size, total_cartones):
     set_paper_size(paper_size=paper_size)
-    
+    columns, rows = calc_columns_and_rows(cartones_per_page)
+
 # --- Ejecución del programa ---
 if __name__ == '__main__':
     
