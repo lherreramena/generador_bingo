@@ -1,6 +1,9 @@
 import random
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+import logging
+
+
 
 # --- 1. Configuración de los cartones y la página ---
 
@@ -27,6 +30,38 @@ PAGE_HEIGHT_MM = 279
 
 PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
 PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
+
+PAGE_SIZE = 'letter'
+
+def set_paper_size_letter(paper_size : str = 'letter'):
+    global PAGE_HEIGHT_MM, PAGE_HEIGHT_PX, PAGE_WIDTH_MM, PAGE_WIDTH_PX
+
+    PAGE_WIDTH_MM = 216
+    PAGE_HEIGHT_MM = 279
+
+    PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
+    PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
+
+def set_paper_size_office(paper_size : str = 'letter'):
+    global PAGE_HEIGHT_MM, PAGE_HEIGHT_PX, PAGE_WIDTH_MM, PAGE_WIDTH_PX
+
+    PAGE_WIDTH_MM = 216
+    PAGE_HEIGHT_MM = 3300
+
+    PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
+    PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
+
+set_paper_size_map = {
+    'letter': set_paper_size_letter,
+    'office': set_paper_size_office,
+}
+
+def set_paper_size(paper_size : str = 'letter'):
+    if paper_size in set_paper_size_map:
+        set_paper_size_map[paper_size]
+    else:
+        PAGE_SIZE = 'letter'
+        logging.info(f"Paper size '{paper_size}' not found. Using by default '{PAGE_SIZE}'")
 
 # Configuración del tamaño de cada cartón (ajustable)
 CARD_WIDTH_PX = mm_a_pixeles(95)  # Ancho de un cartón en píxeles (aprox 8cm)
@@ -192,7 +227,7 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones):
+def generar_hoja_bingo_jpg(cantidad_cartones, paper_size):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -248,5 +283,9 @@ def generar_hoja_bingo_jpg(cantidad_cartones):
 
 # --- Ejecución del programa ---
 if __name__ == '__main__':
+    
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
     CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
+    paper_size = 'letter'
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES, paper_size)
