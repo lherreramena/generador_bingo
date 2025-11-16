@@ -306,10 +306,19 @@ def calc_columns_and_rows(cartones_per_page: int):
     )
 
     return mejor_cols, mejor_filas
+
+def calc_carton_sizes(rows, colums):
+with = int( (PAGE_WIDTH_PX - PAGE_MARGIN_PX) / columns) 
+heigh = int((PAGE_HEIGHT_MM - PAGE_MARGIN_PX)/rows)
+carton_width = min(with, heigh)-CARD_SPACING_PX
+carton_heigh = carton_width
+
+offset_width = 
     
 def calc_sizes(cartones_per_page, paper_size, total_cartones):
     set_paper_size(paper_size=paper_size)
     columns, rows = calc_columns_and_rows(cartones_per_page)
+carton_width, carton_heigh, offset_width, offset_heigh = calc_carton_sizes(rows, colums)
 
 # --- Ejecución del programa ---
 if __name__ == '__main__':
