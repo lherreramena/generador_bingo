@@ -227,7 +227,7 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, paper_size):
+def generar_hoja_bingo_jpg(cantidad_cartones):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -281,6 +281,9 @@ def generar_hoja_bingo_jpg(cantidad_cartones, paper_size):
     print(f"\n✅ Se generó '{output_filename}' con {current_card_count} cartones.")
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
 
+def calc_sizes(cartones_per_page, paper_size, total_cartones):
+    set_paper_size(paper_size=paper_size)
+    
 # --- Ejecución del programa ---
 if __name__ == '__main__':
     
@@ -288,4 +291,5 @@ if __name__ == '__main__':
 
     CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
     paper_size = 'letter'
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES, paper_size)
+    calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES)
