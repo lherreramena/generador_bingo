@@ -227,7 +227,7 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, cols, rows):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -236,8 +236,8 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols, rows):
     # Calcular cuántos cartones caben por fila y columna
     num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_WIDTH_PX + CARD_SPACING_PX)
     num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_HEIGHT_PX + CARD_SPACING_PX)
-    num_cols_page = cols
-    num_rows_page = rows
+    #num_cols_page = cols
+    #num_rows_page = rows
     
     if num_cols_page == 0 or num_rows_page == 0:
         print("Error: Los cartones son demasiado grandes para la página o los márgenes.")
@@ -329,7 +329,7 @@ def calc_sizes(cartones_per_page, paper_size, total_cartones):
     CARD_WIDTH_PX = carton_width
     CARD_HEIGHT_PX = carton_heigh
     CARD_SPACING_PX = offset_width * 2
-    
+
     return columns, rows
 
 # --- Ejecución del programa ---
@@ -339,5 +339,5 @@ if __name__ == '__main__':
 
     CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
     paper_size = 'letter'
-    cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES, cols, rows)
+    #cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES) #, cols, rows)
