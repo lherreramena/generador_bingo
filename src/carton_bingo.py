@@ -211,17 +211,17 @@ def dibujar_carton(df_carton, card_id):
                     font = FONT_NUMBERS
                     text_color = TEXT_COLOR
                 
-                # Centrar texto
-                text_bbox = draw.textbbox((0,0), num_text, font=font)
-                text_width = text_bbox[2] - text_bbox[0]
-                text_height = text_bbox[3] - text_bbox[1]
+                    # Centrar texto
+                    text_bbox = draw.textbbox((0,0), num_text, font=font)
+                    text_width = text_bbox[2] - text_bbox[0]
+                    text_height = text_bbox[3] - text_bbox[1]
 
-                draw.text(
-                    (x1 + (cell_width - text_width) / 2, y1 + (cell_height - text_height) / 2),
-                    num_text, 
-                    fill=text_color, 
-                    font=font
-                )
+                    draw.text(
+                        (x1 + (cell_width - text_width) / 2, y1 + (cell_height - text_height) / 2),
+                        num_text, 
+                        fill=text_color, 
+                        font=font
+                    )
     
     return img
 
