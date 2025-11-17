@@ -26,7 +26,8 @@ def mm_a_pixeles(mm):
     return int((mm / MM_POR_PULGADA) * DPI)
 
 PAGE_WIDTH_MM = 216
-PAGE_HEIGHT_MM = 279
+#PAGE_HEIGHT_MM = 279
+PAGE_HEIGHT_MM = 330
 
 PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
 PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
@@ -64,12 +65,13 @@ def set_paper_size(paper_size : str = 'letter'):
         logging.info(f"Paper size '{paper_size}' not found. Using by default '{PAGE_SIZE}'")
 
 # Configuración del tamaño de cada cartón (ajustable)
-CARD_WIDTH_PX = mm_a_pixeles(95)  # Ancho de un cartón en píxeles (aprox 8cm)
-CARD_HEIGHT_PX = mm_a_pixeles(95) # Alto de un cartón en píxeles (aprox 8cm)
+CARD_WIDTH_PX = mm_a_pixeles(90)  # Ancho de un cartón en píxeles (aprox 8cm)
+CARD_HEIGHT_PX = mm_a_pixeles(90) # Alto de un cartón en píxeles (aprox 8cm)
 
 # Márgenes internos de la página y entre cartones
 PAGE_MARGIN_PX = mm_a_pixeles(10) # 10mm de margen en la página
 CARD_SPACING_PX = mm_a_pixeles(5)  # 5mm de espacio entre cartones
+CARD_SPACING_HEIGHT_PX = mm_a_pixeles(5)
 
 # Colores y fuentes
 BACKGROUND_COLOR = "white"
@@ -79,6 +81,10 @@ TEXT_COLOR = "black"
 FREE_SPACE_COLOR = "red"
 FREE_SPACE_TEXT_COLOR = "white" # Cambiado a blanco para mejor contraste en fondo rojo
 
+pen_colour_map = {
+    'red': 'white',
+    'yellow': 'white'
+}
 # Intentamos cargar una fuente TrueType; si no está disponible, usamos la predeterminada de Pillow
 try:
     #const fontPath = path.join(__dirname, '../assets/fonts/PottiSreeramulu.ttf');
@@ -172,7 +178,8 @@ def dibujar_carton(df_carton, card_id):
                 draw.text(
                     (x1 + (cell_width - text_width) / 2, y1 + (cell_height - text_height) / 2),
                     header_text, 
-                    fill=TEXT_COLOR, 
+                    #fill=TEXT_COLOR,
+                    fill=pen_colour_map[BORDER_COLOR],
                     font=FONT_HEADER
                 )
             else:
@@ -227,15 +234,15 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, cartones_totales=0):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
     """
     
     # Calcular cuántos cartones caben por fila y columna
-    num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_WIDTH_PX + CARD_SPACING_PX)
-    num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + CARD_SPACING_PX) // (CARD_HEIGHT_PX + CARD_SPACING_PX)
+    num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_PX) // (CARD_WIDTH_PX + 2*CARD_SPACING_PX)
+    num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_HEIGHT_PX) // (CARD_HEIGHT_PX + 2*CARD_SPACING_HEIGHT_PX)
     #num_cols_page = cols
     #num_rows_page = rows
     
@@ -272,9 +279,9 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0):
         row = idx // num_cols_page
         col = idx % num_cols_page
 
-        x_offset = PAGE_MARGIN_PX + col * (CARD_WIDTH_PX + CARD_SPACING_PX)
-        y_offset = PAGE_MARGIN_PX + row * (CARD_HEIGHT_PX + CARD_SPACING_PX)
-        info = { 'idx': idx, 'row': row, 'col': col}
+        x_offset = PAGE_MARGIN_PX + col * (CARD_WIDTH_PX + 2*CARD_SPACING_PX) + CARD_SPACING_PX
+        y_offset = PAGE_MARGIN_PX + row * (CARD_HEIGHT_PX + 2*CARD_SPACING_HEIGHT_PX) + CARD_SPACING_HEIGHT_PX
+        info = { 'idx': idx, 'row': row, 'col': col, 'x_offset': x_offset, 'y_offset': y_offset}
         logging.info(f"{info}")
 
         sheet_img.paste(card_img, (x_offset, y_offset))
@@ -313,23 +320,34 @@ def calc_columns_and_rows(cartones_per_page: int):
 
 def calc_carton_sizes(rows, columns):
     width = int( (PAGE_WIDTH_PX - PAGE_MARGIN_PX) / columns) 
-    heigh = int((PAGE_HEIGHT_MM - PAGE_MARGIN_PX)/rows)
-    carton_width = min(width, heigh)- CARD_SPACING_PX
+    heigh = int((PAGE_HEIGHT_PX - PAGE_MARGIN_PX) / rows)
+
+    info = {'PAGE_WIDTH_PX': PAGE_WIDTH_PX, 'PAGE_HEIGHT_PX': PAGE_HEIGHT_PX,'width': width, 'height': heigh}
+    logging.info(f"calc_carton_sizes: {info}")
+
+    carton_width = min(width, heigh)- 2*CARD_SPACING_PX
     carton_heigh = carton_width
 
     offset_width = int((width - carton_width)/2)
     offset_heigh = int((heigh - carton_heigh)/2)
 
+    info = {'width': carton_width, 'offset_width': offset_width}
+    logging.info(f"calc_carton_sizes: {info}")
+
     return carton_width, carton_heigh, offset_width, offset_heigh
     
-def calc_sizes(cartones_per_page, paper_size, total_cartones):
+def calc_sizes(cartones_per_page, paper_size):
+    #global CARD_WIDTH_PX, CARD_HEIGHT_PX, CARD_SPACING_PX, CARD_SPACING_HEIGHT_PX, CARD_SPACING_HEIGHT_PX
     set_paper_size(paper_size=paper_size)
     columns, rows = calc_columns_and_rows(cartones_per_page)
     carton_width, carton_heigh, offset_width, offset_heigh = calc_carton_sizes(rows, columns)
     CARD_WIDTH_PX = carton_width
     CARD_HEIGHT_PX = carton_heigh
-    CARD_SPACING_PX = offset_width * 2
+    CARD_SPACING_PX = offset_width
+    CARD_SPACING_HEIGHT_PX = offset_heigh *2
 
+    info = {'cols': columns, 'rows': rows, 'with': CARD_WIDTH_PX, 'height': CARD_HEIGHT_PX, 'spacing_w': CARD_SPACING_PX, 'spacing_h': CARD_SPACING_HEIGHT_PX}
+    logging.info(f"calc_sizes: {info}")
     return columns, rows
 
 # --- Ejecución del programa ---
@@ -337,7 +355,8 @@ if __name__ == '__main__':
     
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-    CANTIDAD_DESEADA_CARTONES = 6 # Puedes cambiar esta cantidad
-    paper_size = 'letter'
-    #cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES, paper_size)
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES) #, cols, rows)
+    CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
+    CANTIDAD_TOTAL_CARTONES = 1200
+    paper_size = 'office'
+    cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
+    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, CANTIDAD_TOTAL_CARTONES)
