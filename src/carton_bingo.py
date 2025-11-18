@@ -27,8 +27,8 @@ def mm_a_pixeles(mm):
     return int((mm / MM_POR_PULGADA) * DPI)
 
 PAGE_WIDTH_MM = 216
-#PAGE_HEIGHT_MM = 279
-PAGE_HEIGHT_MM = 330
+PAGE_HEIGHT_MM = 279
+#PAGE_HEIGHT_MM = 330
 
 PAGE_WIDTH_PX = mm_a_pixeles(PAGE_WIDTH_MM)
 PAGE_HEIGHT_PX = mm_a_pixeles(PAGE_HEIGHT_MM)
@@ -279,8 +279,8 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_
     # Calcular cuántos cartones caben por fila y columna
     num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_PX) // (CARD_WIDTH_PX + 2*CARD_SPACING_PX)
     num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_HEIGHT_PX) // (CARD_HEIGHT_PX + 2*CARD_SPACING_HEIGHT_PX)
-    #num_cols_page = cols
-    #num_rows_page = rows
+    num_cols_page = cols
+    num_rows_page = rows
     
     if num_cols_page == 0 or num_rows_page == 0:
         print("Error: Los cartones son demasiado grandes para la página o los márgenes.")
@@ -374,17 +374,18 @@ def calc_carton_sizes(rows, columns):
     return carton_width, carton_heigh, offset_width, offset_heigh
     
 def calc_sizes(cartones_per_page, paper_size):
-    #global CARD_WIDTH_PX, CARD_HEIGHT_PX, CARD_SPACING_PX, CARD_SPACING_HEIGHT_PX, CARD_SPACING_HEIGHT_PX
+    global CARD_WIDTH_PX, CARD_HEIGHT_PX, CARD_SPACING_PX, CARD_SPACING_HEIGHT_PX, CARD_SPACING_HEIGHT_PX
     set_paper_size(paper_size=paper_size)
     columns, rows = calc_columns_and_rows(cartones_per_page)
     carton_width, carton_heigh, offset_width, offset_heigh = calc_carton_sizes(rows, columns)
     CARD_WIDTH_PX = carton_width
     CARD_HEIGHT_PX = carton_heigh
     CARD_SPACING_PX = offset_width
-    CARD_SPACING_HEIGHT_PX = offset_heigh *2
+    CARD_SPACING_HEIGHT_PX = offset_heigh 
 
     info = {'cols': columns, 'rows': rows, 'with': CARD_WIDTH_PX, 'height': CARD_HEIGHT_PX, 'spacing_w': CARD_SPACING_PX, 'spacing_h': CARD_SPACING_HEIGHT_PX}
     logging.info(f"calc_sizes: {info}")
+    #quit()
     return columns, rows
 
 # --- Ejecución del programa ---
@@ -394,7 +395,7 @@ if __name__ == '__main__':
 
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
     CANTIDAD_TOTAL_CARTONES = 24
-    paper_size = 'office'
+    paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
     serial = 1
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
