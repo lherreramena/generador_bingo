@@ -3,6 +3,7 @@ import pandas as pd
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import logging
 
+from consolida_pdf import pngs_a_pdf_carta, letter, legal, OFICIO
 
 
 # --- 1. Configuración de los cartones y la página ---
@@ -96,6 +97,7 @@ try:
     NUMBER_FONT_PATH = "/usr/share/code/resources/app/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.ttf"
 
     FONT_SIGN = ImageFont.truetype(SIGN_FONT_PATH, size=32) # Tamaño para CPA
+    FONT_SERIAL = ImageFont.truetype(SIGN_FONT_PATH, size=48) # Tamaño para Num Serie
     FONT_HEADER = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(12)) # Tamaño para B-I-N-G-O
     FONT_NUMBERS = ImageFont.truetype(NUMBER_FONT_PATH, size=mm_a_pixeles(10)) # Tamaño para números
     FONT_FREE = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(8)) # Tamaño para 'Libre'
@@ -132,7 +134,7 @@ def generar_carton_bingo():
 
 # --- 3. Función para dibujar un solo cartón ---
 
-def dibujar_carton(df_carton, card_id):
+def dibujar_carton(df_carton, serie = 'A', card_id=0):
     """
     Dibuja un solo cartón de Bingo como una imagen.
     """
@@ -179,6 +181,7 @@ def dibujar_carton(df_carton, card_id):
         fill=pen_colour_map[BORDER_COLOR],
         font=FONT_SIGN
     )
+
     # Dibujar la cuadrícula y rellenar números
     for r in range(6):
         for c in range(5):
@@ -201,6 +204,20 @@ def dibujar_carton(df_carton, card_id):
                     fill=pen_colour_map[BORDER_COLOR],
                     font=FONT_HEADER
                 )
+                # Serial
+                if df_carton.columns[c] == 'B':
+                    num_serial = ('00'+str(card_id))[:3]
+                    serial = serie + num_serial
+                    text_bbox = draw.textbbox((0,0), serial, font=FONT_SERIAL)
+                    text_width = text_bbox[2] - text_bbox[0]
+                    text_height = text_bbox[3] - text_bbox[1]
+                    draw.text(
+                        (x1 + (cell_width - text_width) / 2, y1 + (0 - 0) / 2),
+                        serial, 
+                        fill=pen_colour_map[BORDER_COLOR],
+                        font=FONT_SERIAL
+                    )
+                    card_id = card_id + 1
             else:
                 # Dibujar línea de la cuadrícula
                 draw.rectangle((x1, y1, x2, y2), outline=GRID_COLOR, width=1)
@@ -286,7 +303,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_
     print(f"Generando {cantidad_cartones} cartones y dibujándolos...")
     for i in range(cantidad_cartones):
         df_carton = generar_carton_bingo()
-        card_img = dibujar_carton(df_carton, i + 1)
+        card_img = dibujar_carton(df_carton, serie='A', card_id=i + 1)
         card_images.append(card_img)
 
     # Pegar los cartones en la hoja
@@ -310,6 +327,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_
     sheet_img.save(output_filename, quality=90, dpi=(DPI, DPI)) # Guarda con DPI para impresión
     print(f"\n✅ Se generó '{output_filename}' con {current_card_count} cartones.")
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
+    return output_filename
 
 def calc_columns_and_rows(cartones_per_page: int):
     """"
@@ -380,5 +398,8 @@ if __name__ == '__main__':
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
     serial = 1
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
+    worksheet = []
     for num_hoja in range(1,total_hojas+1):
-        generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
+        sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
+        worksheet.append(sheet)
+    pngs_a_pdf_carta(worksheet, "cartones.pdf", OFICIO)

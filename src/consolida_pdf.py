@@ -1,15 +1,20 @@
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, legal
 from reportlab.lib.units import inch
 from PIL import Image
 
-def pngs_a_pdf_carta(lista_pngs, nombre_pdf_salida):
+from reportlab.lib.units import mm
+
+# Oficio / Government Legal paper size
+OFICIO = (216 * mm, 330 * mm)
+
+def pngs_a_pdf_carta(lista_pngs, nombre_pdf_salida, pagesize):
     """
     Consolida una lista de archivos PNG en un único PDF con tamaño de página Carta.
     """
     # 1. Crear el objeto Canvas (lienzo) del PDF
     # letter es (8.5 * inch, 11 * inch) o (612, 792) puntos
-    c = canvas.Canvas(nombre_pdf_salida, pagesize=letter)
+    c = canvas.Canvas(nombre_pdf_salida, pagesize=pagesize)
     ancho_pagina, alto_pagina = letter
 
     # 2. Procesar cada archivo PNG
@@ -62,21 +67,22 @@ def pngs_a_pdf_carta(lista_pngs, nombre_pdf_salida):
 
 # --- USO DEL SCRIPT ---
 
-# Reemplaza estas rutas con los nombres reales de tus archivos PNG
-archivos_png = [
-    "mi_imagen_1.png",
-    "mi_imagen_2.png",
-    "ruta/completa/a/otra_imagen_3.png",
-    # Agrega todos tus archivos PNG aquí
-]
+if __name__ == '__main__':
+    # Reemplaza estas rutas con los nombres reales de tus archivos PNG
+    archivos_png = [
+        "mi_imagen_1.png",
+        "mi_imagen_2.png",
+        "ruta/completa/a/otra_imagen_3.png",
+        # Agrega todos tus archivos PNG aquí
+    ]
 
-nombre_pdf = "documento_consolidado.pdf"
+    nombre_pdf = "documento_consolidado.pdf"
 
-# Ejecutar la función
-# NOTA: Asegúrate de que los archivos PNG listados arriba existan en la ubicación correcta
-# antes de ejecutar la función, o el script fallará.
-# pngs_a_pdf_carta(archivos_png, nombre_pdf)
+    # Ejecutar la función
+    # NOTA: Asegúrate de que los archivos PNG listados arriba existan en la ubicación correcta
+    # antes de ejecutar la función, o el script fallará.
+    # pngs_a_pdf_carta(archivos_png, nombre_pdf)
 
-# Ejemplo de prueba (comentar el código de ejemplo si se usan archivos reales):
-print("Simulación de la ejecución (por favor, descomenta y actualiza 'archivos_png' para usarlo realmente):")
-# pngs_a_pdf_carta(archivos_png, nombre_pdf)
+    # Ejemplo de prueba (comentar el código de ejemplo si se usan archivos reales):
+    print("Simulación de la ejecución (por favor, descomenta y actualiza 'archivos_png' para usarlo realmente):")
+    # pngs_a_pdf_carta(archivos_png, nombre_pdf)
