@@ -69,9 +69,9 @@ CARD_WIDTH_PX = mm_a_pixeles(90)  # Ancho de un cartón en píxeles (aprox 8cm)
 CARD_HEIGHT_PX = mm_a_pixeles(90) # Alto de un cartón en píxeles (aprox 8cm)
 
 # Márgenes internos de la página y entre cartones
-PAGE_MARGIN_PX = mm_a_pixeles(10) # 10mm de margen en la página
-CARD_SPACING_PX = mm_a_pixeles(5)  # 5mm de espacio entre cartones
-CARD_SPACING_HEIGHT_PX = mm_a_pixeles(5)
+PAGE_MARGIN_PX = mm_a_pixeles(8) # 10mm de margen en la página
+CARD_SPACING_PX = mm_a_pixeles(6)  # 5mm de espacio entre cartones
+CARD_SPACING_HEIGHT_PX = mm_a_pixeles(7)
 
 # Colores y fuentes
 BACKGROUND_COLOR = "white"
@@ -92,8 +92,12 @@ try:
     #FONT_PATH = "/usr/share/code/resources/app/node_modules/katex/dist/fonts/KaTeX_Caligraphic-Regular.ttf"
     #FONT_PATH = "/usr/share/fonts/truetype/teluguvijayam/PottiSreeramulu.ttf"
     FONT_PATH = "../assets/fonts/PottiSreeramulu.ttf"
-    FONT_HEADER = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(8)) # Tamaño para B-I-N-G-O
-    FONT_NUMBERS = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(10)) # Tamaño para números
+    SIGN_FONT_PATH = "/usr/share/code/resources/app/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.ttf"
+    NUMBER_FONT_PATH = "/usr/share/code/resources/app/node_modules/katex/dist/fonts/KaTeX_SansSerif-Regular.ttf"
+
+    FONT_SIGN = ImageFont.truetype(SIGN_FONT_PATH, size=32) # Tamaño para CPA
+    FONT_HEADER = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(12)) # Tamaño para B-I-N-G-O
+    FONT_NUMBERS = ImageFont.truetype(NUMBER_FONT_PATH, size=mm_a_pixeles(10)) # Tamaño para números
     FONT_FREE = ImageFont.truetype(FONT_PATH, size=mm_a_pixeles(8)) # Tamaño para 'Libre'
 except IOError:
     print("Advertencia: No se encontró 'arial.ttf'. Usando la fuente predeterminada de Pillow.")
@@ -160,6 +164,21 @@ def dibujar_carton(df_carton, card_id):
     cell_width = (inner_rect[2] - inner_rect[0]) / 5
     cell_height = (inner_rect[3] - inner_rect[1]) / 5
 
+    # Firma CPA
+    sign_text = 'Bingo Solidario 2025 - Centro de Padres Colegio Patrona'
+    text_bbox = draw.textbbox((0,0), sign_text, font=FONT_SIGN)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+    x = BORDER_THICKNESS  # un pequeño margen a la izquierda
+    y = CARD_HEIGHT_PX - BORDER_THICKNESS - text_height - 5  # un pequeño margen arriba del borde inferior
+    y = CARD_HEIGHT_PX - BORDER_THICKNESS + 5
+
+    draw.text(
+        ( x, y),
+        sign_text, 
+        fill=pen_colour_map[BORDER_COLOR],
+        font=FONT_SIGN
+    )
     # Dibujar la cuadrícula y rellenar números
     for r in range(6):
         for c in range(5):
@@ -234,7 +253,7 @@ def dibujar_carton(df_carton, card_id):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, cartones_totales=0):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_hoja=0):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -287,13 +306,13 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, cartones_totales=0
         sheet_img.paste(card_img, (x_offset, y_offset))
         current_card_count += 1
 
-    output_filename = f"cartones_bingo_hoja_{current_card_count}.jpg"
+    output_filename = f"output/{current_card_count}_cartones_bingo_hoja_{('00'+str(num_hoja))[:3]}.jpg"
     sheet_img.save(output_filename, quality=90, dpi=(DPI, DPI)) # Guarda con DPI para impresión
     print(f"\n✅ Se generó '{output_filename}' con {current_card_count} cartones.")
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
 
 def calc_columns_and_rows(cartones_per_page: int):
-    """
+    """"
     Calcula cuántas columnas y filas se deben usar en la página
     basándose en el tamaño de la página y la cantidad de cartones deseada.
     Devuelve (num_cols, num_rows).
@@ -356,7 +375,10 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 1200
+    CANTIDAD_TOTAL_CARTONES = 24
     paper_size = 'office'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
-    generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, CANTIDAD_TOTAL_CARTONES)
+    serial = 1
+    total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
+    for num_hoja in range(1,total_hojas+1):
+        generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
