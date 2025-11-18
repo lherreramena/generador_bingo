@@ -403,4 +403,4 @@ if __name__ == '__main__':
     for num_hoja in range(1,total_hojas+1):
         sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
         worksheet.append(sheet)
-    pngs_a_pdf_carta(worksheet, "cartones.pdf", OFICIO)
+    pngs_a_pdf_carta(worksheet, "cartones.pdf", letter)
