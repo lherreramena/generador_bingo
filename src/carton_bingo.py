@@ -2,6 +2,7 @@ import random
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import logging
+import string
 
 from consolida_pdf import pngs_a_pdf_carta, letter, legal, OFICIO
 
@@ -295,7 +296,7 @@ def dibujar_carton(df_carton, serie = 'A', card_id=0):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_hoja=0):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', num_hoja=0):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
@@ -328,7 +329,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, num_carton=0, num_
     print(f"Generando {cantidad_cartones} cartones y dibujándolos...")
     for i in range(cantidad_cartones):
         df_carton = generar_carton_bingo()
-        card_img = dibujar_carton(df_carton, serie='A', card_id=i + 1)
+        card_img = dibujar_carton(df_carton, serie=serie_carton, card_id=i + 1)
         card_images.append(card_img)
 
     # Pegar los cartones en la hoja
@@ -423,13 +424,14 @@ if __name__ == '__main__':
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
+    series = list(string.ascii_uppercase)
     for color in COLORS_ARRAY:
         BORDER_COLOR = color
 
-        serial = 1
+        serial = series.pop(0)
         worksheet = []
         for num_hoja in range(1,total_hojas+1):
-            sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
+            sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, serie_carton=serial, num_hoja=num_hoja)
             worksheet.append(sheet)
-        carton_filename = f"cartones_{BORDER_COLOR}.pdf"
+        carton_filename = f"cartones_{serial}_{BORDER_COLOR}.pdf"
         pngs_a_pdf_carta(worksheet, carton_filename, letter)
