@@ -418,17 +418,18 @@ if __name__ == '__main__':
     
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
+    CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
+    CANTIDAD_TOTAL_CARTONES = 6
+    total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
+    paper_size = 'letter'
+    cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
     for color in COLORS_ARRAY:
         BORDER_COLOR = color
 
-    CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 180
-    paper_size = 'letter'
-    cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
-    serial = 1
-    total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
-    worksheet = []
-    for num_hoja in range(1,total_hojas+1):
-        sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
-        worksheet.append(sheet)
-    pngs_a_pdf_carta(worksheet, "cartones.pdf", letter)
+        serial = 1
+        worksheet = []
+        for num_hoja in range(1,total_hojas+1):
+            sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, num_carton=serial, num_hoja=num_hoja)
+            worksheet.append(sheet)
+        carton_filename = f"cartones_{BORDER_COLOR}.pdf"
+        pngs_a_pdf_carta(worksheet, carton_filename, letter)

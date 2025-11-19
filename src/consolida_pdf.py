@@ -5,6 +5,9 @@ from PIL import Image
 
 from reportlab.lib.units import mm
 
+import os
+
+
 # Oficio / Government Legal paper size
 OFICIO = (216 * mm, 330 * mm)
 
@@ -64,6 +67,9 @@ def pngs_a_pdf_carta(lista_pngs, nombre_pdf_salida, pagesize):
     # 5. Guardar el PDF final
     c.save()
     print(f"\n✨ ¡PDF creado con éxito! Nombre del archivo: **{nombre_pdf_salida}**")
+
+    for i, ruta_png in enumerate(lista_pngs):
+        os.remove(ruta_png)
 
 # --- USO DEL SCRIPT ---
 
