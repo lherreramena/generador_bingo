@@ -75,6 +75,25 @@ CARD_SPACING_PX = mm_a_pixeles(6)  # 5mm de espacio entre cartones
 CARD_SPACING_HEIGHT_PX = mm_a_pixeles(7)
 
 # Colores y fuentes
+COLORS_ARRAY = [
+    'red',
+    'blue',
+    'yellow',
+    'cyan',
+    'green',
+    'orange',
+    'purple',
+    'pink',
+    'brown',
+    'magenta',
+    'lime',
+    'teal',
+    'navy',
+    'violet',
+    'indigo',
+    'maroon'
+]
+
 BACKGROUND_COLOR = "white"
 BORDER_COLOR = "red"
 GRID_COLOR = "black"
@@ -82,10 +101,16 @@ TEXT_COLOR = "black"
 FREE_SPACE_COLOR = "red"
 FREE_SPACE_TEXT_COLOR = "white" # Cambiado a blanco para mejor contraste en fondo rojo
 
-pen_colour_map = {
-    'red': 'white',
-    'yellow': 'white'
-}
+#pen_colour_map = {
+#    'red': 'white',
+#    'yellow': 'white',
+#    'blue': 'white',
+#}
+
+pen_colour_map = {color: 'white' for color in COLORS_ARRAY}
+for color in ['yellow', 'lime']:
+    pen_colour_map[color] = 'black'
+
 # Intentamos cargar una fuente TrueType; si no está disponible, usamos la predeterminada de Pillow
 try:
     #const fontPath = path.join(__dirname, '../assets/fonts/PottiSreeramulu.ttf');
@@ -393,8 +418,11 @@ if __name__ == '__main__':
     
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
+    for color in COLORS_ARRAY:
+        BORDER_COLOR = color
+
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 24
+    CANTIDAD_TOTAL_CARTONES = 180
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
     serial = 1
