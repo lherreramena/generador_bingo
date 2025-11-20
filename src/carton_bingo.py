@@ -426,7 +426,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 18
+    CANTIDAD_TOTAL_CARTONES = 180
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
@@ -449,4 +449,4 @@ if __name__ == '__main__':
         carton_filename = f"cartones_juego_{nombre_juego}_{serial}_{BORDER_COLOR}.pdf"
         pngs_a_pdf_carta(worksheet, carton_filename, letter)
         num_juego = num_juego + 1
-        break
+        #break
