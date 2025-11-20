@@ -233,7 +233,7 @@ def dibujar_carton(df_carton, serie = 'A', card_id=0):
                 )
                 # Serial
                 if df_carton.columns[c] == 'B':
-                    num_serial = ('00'+str(card_id))[:3]
+                    num_serial = ('00'+str(card_id))[-3:]
                     serial = serie + '-' + num_serial
                     text_bbox = draw.textbbox((0,0), serial, font=FONT_SERIAL)
                     text_width = text_bbox[2] - text_bbox[0]
@@ -330,7 +330,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', 
     print(f"Generando {cantidad_cartones} cartones y dibujándolos...")
     for i in range(cantidad_cartones):
         df_carton = generar_carton_bingo()
-        card_img = dibujar_carton(df_carton, serie=serie_carton, card_id=i + 1)
+        card_img = dibujar_carton(df_carton, serie=serie_carton, card_id=(num_hoja-1)*cantidad_cartones + i + 1)
         card_images.append(card_img)
 
     # Pegar los cartones en la hoja
@@ -350,7 +350,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', 
         sheet_img.paste(card_img, (x_offset, y_offset))
         current_card_count += 1
 
-    output_filename = f"output/{current_card_count}_cartones_bingo_hoja_{('00'+str(num_hoja))[:3]}.jpg"
+    output_filename = f"output/{current_card_count}_cartones_bingo_hoja_{('00'+str(num_hoja))[-3:]}.jpg"
     sheet_img.save(output_filename, quality=90, dpi=(DPI, DPI)) # Guarda con DPI para impresión
     print(f"\n✅ Se generó '{output_filename}' con {current_card_count} cartones.")
     print(f"Tamaño de la página: {PAGE_WIDTH_MM}mm x {PAGE_HEIGHT_MM}mm ({PAGE_WIDTH_PX}x{PAGE_HEIGHT_PX}px a {DPI} DPI)")
@@ -421,7 +421,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 6
+    CANTIDAD_TOTAL_CARTONES = 180
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
@@ -444,3 +444,4 @@ if __name__ == '__main__':
         carton_filename = f"cartones_juego_{nombre_juego}_{serial}_{BORDER_COLOR}.pdf"
         pngs_a_pdf_carta(worksheet, carton_filename, letter)
         num_juego = num_juego + 1
+        #break
