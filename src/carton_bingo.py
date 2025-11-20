@@ -89,11 +89,12 @@ COLORS_ARRAY = [
     'magenta',
     'lime',
     'teal',
-    'navy',
+    'turquoise',
     'violet',
     'indigo',
-    'maroon'
+    'chartreuse'
 ]
+
 
 BACKGROUND_COLOR = "white"
 BORDER_COLOR = "red"
@@ -233,7 +234,7 @@ def dibujar_carton(df_carton, serie = 'A', card_id=0):
                 # Serial
                 if df_carton.columns[c] == 'B':
                     num_serial = ('00'+str(card_id))[:3]
-                    serial = serie + num_serial
+                    serial = serie + '-' + num_serial
                     text_bbox = draw.textbbox((0,0), serial, font=FONT_SERIAL)
                     text_width = text_bbox[2] - text_bbox[0]
                     text_height = text_bbox[3] - text_bbox[1]
@@ -425,6 +426,11 @@ if __name__ == '__main__':
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
     series = list(string.ascii_uppercase)
+    #          0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12
+    series = ['L', 'T', 'U', 'A', 'M', 'N', 'O', 'C', 'H', 'X', 'Z', 'E', 'I']
+    series.append('Ɔ')  #13
+    series.append('W')  #14
+    series.append('F')  #15
     for color in COLORS_ARRAY:
         BORDER_COLOR = color
 
