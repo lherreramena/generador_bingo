@@ -431,6 +431,7 @@ if __name__ == '__main__':
     series.append('Ɔ')  #13
     series.append('W')  #14
     series.append('F')  #15
+    num_juego = 1
     for color in COLORS_ARRAY:
         BORDER_COLOR = color
 
@@ -439,5 +440,7 @@ if __name__ == '__main__':
         for num_hoja in range(1,total_hojas+1):
             sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, serie_carton=serial, num_hoja=num_hoja)
             worksheet.append(sheet)
-        carton_filename = f"cartones_{serial}_{BORDER_COLOR}.pdf"
+        nombre_juego = ("0" + str(num_juego))[:2]
+        carton_filename = f"cartones_juego_{nombre_juego}_{serial}_{BORDER_COLOR}.pdf"
         pngs_a_pdf_carta(worksheet, carton_filename, letter)
+        num_juego = num_juego + 1
