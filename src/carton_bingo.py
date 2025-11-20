@@ -161,7 +161,7 @@ def generar_carton_bingo():
 
 # --- 3. Función para dibujar un solo cartón ---
 
-def dibujar_carton(df_carton, serie = 'A', card_id=0):
+def dibujar_carton(df_carton, num_juego=0, serie = 'A', card_id=0):
     """
     Dibuja un solo cartón de Bingo como una imagen.
     """
@@ -233,13 +233,18 @@ def dibujar_carton(df_carton, serie = 'A', card_id=0):
                 )
                 # Serial
                 if df_carton.columns[c] == 'B':
+                    #logging.info(f"NumJuego: {num_juego}")
+                    str_num_juego = ('0'+str(num_juego))[-2:]
                     num_serial = ('00'+str(card_id))[-3:]
-                    serial = serie + '-' + num_serial
+                    serial = 'Juego ' + str_num_juego + ' - Letra: ' + serie + ' - Carton: ' + num_serial
+                    #logging.info(f"serial: {serial}")
+                    #serial = ' Letra: ' + serie + ' Carton ' + num_serial
                     text_bbox = draw.textbbox((0,0), serial, font=FONT_SERIAL)
                     text_width = text_bbox[2] - text_bbox[0]
                     text_height = text_bbox[3] - text_bbox[1]
                     draw.text(
-                        (x1 + (cell_width - text_width) / 2, y1 + (0 - 0) / 2),
+                        #(x1 + (cell_width - text_width) / 2, y1 + (0 - 0) / 2),
+                        (x1 + (cell_width) / 2, y1 + (0 - 0) / 2),
                         serial, 
                         fill=pen_colour_map[BORDER_COLOR],
                         font=FONT_SERIAL
@@ -297,12 +302,12 @@ def dibujar_carton(df_carton, serie = 'A', card_id=0):
 
 # --- 4. Función principal para generar la hoja JPG ---
 
-def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', num_hoja=0):
+def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', num_hoja=0, num_juego=0):
     """
     Genera y organiza múltiples cartones de bingo en una imagen JPG
     simulando una hoja de tamaño carta.
     """
-    
+    logging.info(f"Num Juego: {num_juego}")
     # Calcular cuántos cartones caben por fila y columna
     num_cols_page = (PAGE_WIDTH_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_PX) // (CARD_WIDTH_PX + 2*CARD_SPACING_PX)
     num_rows_page = (PAGE_HEIGHT_PX - 2 * PAGE_MARGIN_PX + 2*CARD_SPACING_HEIGHT_PX) // (CARD_HEIGHT_PX + 2*CARD_SPACING_HEIGHT_PX)
@@ -330,7 +335,7 @@ def generar_hoja_bingo_jpg(cantidad_cartones, cols=0, rows=0, serie_carton='A', 
     print(f"Generando {cantidad_cartones} cartones y dibujándolos...")
     for i in range(cantidad_cartones):
         df_carton = generar_carton_bingo()
-        card_img = dibujar_carton(df_carton, serie=serie_carton, card_id=(num_hoja-1)*cantidad_cartones + i + 1)
+        card_img = dibujar_carton(df_carton, num_juego=num_juego, serie=serie_carton, card_id=(num_hoja-1)*cantidad_cartones + i + 1)
         card_images.append(card_img)
 
     # Pegar los cartones en la hoja
@@ -421,7 +426,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     CANTIDAD_DESEADA_CARTONES_POR_HOJA = 6 # Puedes cambiar esta cantidad
-    CANTIDAD_TOTAL_CARTONES = 180
+    CANTIDAD_TOTAL_CARTONES = 18
     total_hojas = int(CANTIDAD_TOTAL_CARTONES/CANTIDAD_DESEADA_CARTONES_POR_HOJA)
     paper_size = 'letter'
     cols, rows = calc_sizes(CANTIDAD_DESEADA_CARTONES_POR_HOJA, paper_size)
@@ -438,10 +443,10 @@ if __name__ == '__main__':
         serial = series.pop(0)
         worksheet = []
         for num_hoja in range(1,total_hojas+1):
-            sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, serie_carton=serial, num_hoja=num_hoja)
+            sheet = generar_hoja_bingo_jpg(CANTIDAD_DESEADA_CARTONES_POR_HOJA, cols, rows, serie_carton=serial, num_hoja=num_hoja, num_juego = num_juego)
             worksheet.append(sheet)
         nombre_juego = ("0" + str(num_juego))[-2:]
         carton_filename = f"cartones_juego_{nombre_juego}_{serial}_{BORDER_COLOR}.pdf"
         pngs_a_pdf_carta(worksheet, carton_filename, letter)
         num_juego = num_juego + 1
-        #break
+        break
